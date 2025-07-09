@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message 4 You</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500&display=swap');
+        
+        body {
+            background-color: #ffe6f2;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .envelope {
+            background-color: #fff0f5;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            position: relative;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+            border: 2px solid #ff9ec4;
+        }
+        
+        .envelope:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 158, 196, 0.15) 0%, rgba(255, 255, 255, 0) 50%);
+            border-radius: 8px;
+            z-index: -1;
+        }
+        
+        .envelope-flap {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg);
+            width: 95%;
+            height: 60px;
+            background-color: #ffcce0;
+            border-radius: 8px 8px 0 0;
+            z-index: -1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff66b2;
+            transform: rotate(45deg);
+            opacity: 0;
+        }
+        
+        .heart:before, .heart:after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff66b2;
+            border-radius: 50%;
+        }
+        
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: -10px;
+        }
+        
+        .confession-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            text-align: center;
+            min-height: 200px;
+            position: relative;
+            font-weight: 300;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 24px;
+            background-color: #ff66b2;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .signature {
+            font-family: 'Type Writer', cursive;
+            font-size: 24px;
+            color: #ff66b2;
+            text-align: right;
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .pinky {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background-color: #ffcce0;
+            border-radius: 20px;
+            transform: rotate(45deg);
+            opacity: 0;
+        }
+        
+        .pinky-knuckle {
+            position: absolute;
+            width: 20px;
+            height: 8px;
+            background-color: #ff99c2;
+            border-radius: 4px;
+            opacity: 0;
+        }
+        
+        .seal {
+            position: absolute;
+            bottom: -15px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #ff66b2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .seal:after {
+            content: '❤️';
+            font-size: 20px;
+        }
+
+        .animal-sticker {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(-5deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+    <div id="intro" class="fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50 transition-opacity duration-500">
+        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/aa0b1837-34ce-41ed-a5e4-b6d957742b0e.png" alt="Cute bunny sticker" class="w-24 h-24 mb-6 animate-bounce">
+        <h2 class="text-2xl font-semibold text-pink-500 mb-4">Hi there!</h2>
+        <p class="text-lg text-gray-700 mb-8">Click the envelope to reveal a message 💌</p>
+        <div class="w-40 h-56 bg-rose-100 rounded-lg shadow-lg flex items-center justify-center cursor-pointer transform hover:scale-110 transition-transform" id="closedEnvelope">
+            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d4a48799-422c-456f-81e8-be141c8842aa.png" alt="Closed envelope" class="w-16 h-16">
+        </div>
+    </div>
+    <div class="envelope" style="display: none;">
+        <div class="envelope-flap"></div>
+        
+        <div class="confession-text" id="confessionText">
+            <div id="typedText"></div>
+            <span class="cursor" id="cursor"></span>
+        </div>
+        
+        <div class="signature" id="signature">With love</div>
+        
+        <div class="seal" id="seal"></div>
+        
+        <!-- Pinky elements -->
+        <div class="pinky" id="pinky1"></div>
+        <div class="pinky-knuckle" id="knuckle1"></div>
+        <div class="pinky" id="pinky2"></div>
+        <div class="pinky-knuckle" id="knuckle2"></div>
+        
+        <!-- Floating hearts -->
+        <div class="heart" id="heart1"></div>
+        <div class="heart" id="heart2"></div>
+        <div class="heart" id="heart3"></div>
+        <div class="heart" id="heart4"></div>
+    </div>
+
+    <script>
+        const confession = "Hi, I just wanted to be honest with you… I like you. I don't know exactly when it started, but you've been on my mind a lot lately. I'm not expecting anything—I just felt like it's time na para malaman mo. I liked everything about you girl, and hindi ‘to basta eme lang I made this letter with pure intentions and pure love. I am not expecting na ma-r-reciprocate mo yung feelings ko pero yea.that's all loveya.";
+        const typedText = document.getElementById('typedText');
+        const cursor = document.getElementById('cursor');
+        const signature = document.getElementById('signature');
+        const seal = document.getElementById('seal');
+        
+        // Get pinky elements
+        const pinky1 = document.getElementById('pinky1');
+        const pinky2 = document.getElementById('pinky2');
+        const knuckle1 = document.getElementById('knuckle1');
+        const knuckle2 = document.getElementById('knuckle2');
+        
+        // Position pinky elements
+        function positionElements() {
+            const envelope = document.querySelector('.envelope');
+            const rect = envelope.getBoundingClientRect();
+            
+            // Pinky finger 1
+            pinky1.style.left = `${rect.left - 20}px`;
+            pinky1.style.top = `${rect.top + rect.height/3}px`;
+            
+            // Pinky finger 2
+            pinky2.style.left = `${rect.right}px`;
+            pinky2.style.top = `${rect.top + rect.height/2}px`;
+            
+            // Knuckles
+            knuckle1.style.left = `${rect.left - 10}px`;
+            knuckle1.style.top = `${rect.top + rect.height/3 + 10}px`;
+            
+            knuckle2.style.left = `${rect.right + 10}px`;
+            knuckle2.style.top = `${rect.top + rect.height/2 + 10}px`;
+            
+            // Position hearts
+            positionHearts();
+        }
+        
+        function positionHearts() {
+            const envelope = document.querySelector('.envelope');
+            const rect = envelope.getBoundingClientRect();
+            
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                heart.style.left = `${rect.left + Math.random() * rect.width}px`;
+                heart.style.top = `${rect.top + Math.random() * rect.height}px`;
+                heart.style.opacity = '0';
+            });
+        }
+        
+        function animatePinky() {
+            pinky1.style.opacity = '1';
+            pinky2.style.opacity = '1';
+            knuckle1.style.opacity = '1';
+            knuckle2.style.opacity = '1';
+            
+            // Random gentle movement
+            setInterval(() => {
+                pinky1.style.transform = `rotate(${45 + Math.random() * 10 - 5}deg)`;
+                pinky2.style.transform = `rotate(${45 + Math.random() * 10 - 5}deg)`;
+            }, 1000);
+        }
+        
+        function createHearts() {
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach((heart, index) => {
+                setTimeout(() => {
+                    heart.style.opacity = '0.7';
+                    animateHeart(heart);
+                }, index * 500);
+            });
+        }
+        
+        function animateHeart(heart) {
+            let posY = parseInt(heart.style.top);
+            const decrease = Math.random() * 2 + 1;
+            const moveInterval = setInterval(() => {
+                posY -= decrease;
+                heart.style.top = `${posY}px`;
+                
+                if (posY < -20) {
+                    clearInterval(moveInterval);
+                    heart.style.top = `${window.innerHeight + 20}px`;
+                    heart.style.left = `${Math.random() * window.innerWidth}px`;
+                    setTimeout(() => {
+                        animateHeart(heart);
+                    }, 1000);
+                }
+            }, 30);
+        }
+        
+        function typeWriter() {
+            let i = 0;
+            const speed = 30; // typing speed in ms
+            
+            function type() {
+                if (i < confession.length) {
+                    typedText.innerHTML += confession.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                    
+                    // Random wiggle effect
+                    if (i % 5 === 0) {
+                        typedText.style.transform = `translateY(${Math.random() * 5 - 2.5}px) rotate(${Math.random() * 6 - 3}deg)`;
+                            typedText.style.fontFamily = i%2 === 0 ? '"Comic Sans MS", cursive' : '"Poppins", sans-serif';
+                    }
+                    
+                    // Show signature when typing is almost done
+                    if (i > confession.length * 0.8) {
+                        signature.style.opacity = '1';
+                        signature.style.transform = 'translateY(0)';
+                    }
+                    
+                    // Show seal when typing is complete
+                    if (i === confession.length) {
+                        setTimeout(() => {
+                            seal.style.opacity = '1';
+                            seal.style.transform = 'scale(1)';
+                            cursor.style.opacity = '0';
+                            createHearts();
+                        }, 500);
+                    }
+                }
+            }
+            
+            type();
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const intro = document.getElementById('intro');
+            const closedEnvelope = document.getElementById('closedEnvelope');
+            const mainEnvelope = document.querySelector('.envelope');
+            
+            // Make bunny sticker bigger and sillier
+            const bunny = document.querySelector('#intro img');
+            bunny.style.width = '150px';
+            bunny.style.height = '150px';
+            bunny.style.animation = 'bounce 0.8s ease infinite alternate';
+
+            // Add silly text effect to intro
+            const introText = document.querySelector('#intro h2');
+            introText.style.fontFamily = '"Comic Sans MS", cursive';
+            introText.style.fontSize = '2.5rem';
+            introText.style.textDecoration = 'underline wavy pink';
+
+            // Handle envelope click
+            closedEnvelope.addEventListener('click', () => {
+                closedEnvelope.style.transform = 'rotate(360deg)';
+                closedEnvelope.style.transition = 'transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                intro.style.opacity = '0';
+                
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    mainEnvelope.style.display = 'block';
+                    mainEnvelope.style.transform = 'scale(0.5)';
+                    mainEnvelope.style.transition = 'transform 0.5s ease-out';
+                    setTimeout(() => {
+                        mainEnvelope.style.transform = 'scale(1)';
+                    }, 100);
+                    positionElements();
+                    animatePinky();
+                    typeWriter();
+                }, 1000);
+            });
+            
+            // Window resize handler
+            window.addEventListener('resize', positionElements);
+            
+            // Animate envelope on hover
+            const envelope = document.querySelector('.envelope');
+            envelope.addEventListener('mouseenter', () => {
+                envelope.style.transform = 'translateY(-5px)';
+            });
+            envelope.addEventListener('mouseleave', () => {
+                envelope.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
+
